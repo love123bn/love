@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const letterSignatureBox = document.getElementById('letterSignatureBox');
   const letterDate = document.getElementById('letterDate');
   const musicToggle = document.getElementById('musicToggle');
+  const bgAudio = document.getElementById('bgAudio');
   const treeSpacer = document.querySelector('.tree-spacer');
 
   // Set Current Date in Vietnamese
@@ -47,21 +48,20 @@ document.addEventListener('DOMContentLoaded', () => {
   resizeCanvases();
 
   /* ===================================================
-     1. WEB AUDIO ROMANTIC SOUND ENGINE (Mobile & Desktop)
+     1. AUDIO SYSTEM (Supports audio.mp3 + Web Audio fallback)
      =================================================== */
   let audioCtx = null;
   let isPlayingMusic = false;
   let melodyInterval = null;
+  let hasCustomMp3 = false;
 
   function initAudio() {
     try {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) return;
-
-      if (!audioCtx) {
+      if (AudioContextClass && !audioCtx) {
         audioCtx = new AudioContextClass();
       }
-      if (audioCtx.state === 'suspended') {
+      if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
     } catch (err) {
@@ -69,14 +69,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Attempt playing MP3, fallback to synthesized piano chords if unavailable
+  function playMusicTrack() {
+    if (bgAudio) {
+      bgAudio.volume = 0.85;
+      const playPromise = bgAudio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          hasCustomMp3 = true;
+          isPlayingMusic = true;
+          musicToggle.classList.add('playing');
+        }).catch(() => {
+          // Fallback to Web Audio synthesis
+          hasCustomMp3 = false;
+          isPlayingMusic = true;
+          musicToggle.classList.add('playing');
+          startRomanticMelody();
+        });
+        return;
+      }
+    }
+    // No bgAudio element
+    isPlayingMusic = true;
+    musicToggle.classList.add('playing');
+    startRomanticMelody();
+  }
+
+  function pauseMusicTrack() {
+    isPlayingMusic = false;
+    musicToggle.classList.remove('playing');
+    if (bgAudio && !bgAudio.paused) {
+      try { bgAudio.pause(); } catch(e){}
+    }
+    if (melodyInterval) {
+      clearInterval(melodyInterval);
+      melodyInterval = null;
+    }
+  }
+
   // Ensure AudioContext is unlocked on ANY first user interaction (touch/click/key)
   function unlockAudioOnFirstInteraction() {
     initAudio();
-    if (audioCtx && audioCtx.state === 'running') {
-      ['click', 'touchstart', 'touchend', 'keydown'].forEach(evt => {
-        window.removeEventListener(evt, unlockAudioOnFirstInteraction, true);
-      });
+    if (bgAudio) {
+      bgAudio.load();
     }
+    ['click', 'touchstart', 'touchend', 'keydown'].forEach(evt => {
+      window.removeEventListener(evt, unlockAudioOnFirstInteraction, true);
+    });
   }
   ['click', 'touchstart', 'touchend', 'keydown'].forEach(evt => {
     window.addEventListener(evt, unlockAudioOnFirstInteraction, { capture: true, passive: true });
@@ -119,13 +158,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function startRomanticMelody() {
     if (melodyInterval) clearInterval(melodyInterval);
+    // Play first note immediately
+    const firstFreq = romanticMelodyNotes[0];
+    playSoftTone(firstFreq, 2.2, 0.16);
+
     melodyInterval = setInterval(() => {
-      if (isPlayingMusic) {
+      if (isPlayingMusic && !hasCustomMp3) {
         const baseFreq = romanticMelodyNotes[noteIndex % romanticMelodyNotes.length];
-        playSoftTone(baseFreq, 2.2, 0.1);
+        playSoftTone(baseFreq, 2.2, 0.16);
         if (noteIndex % 2 === 0) {
           setTimeout(() => {
-            if (isPlayingMusic) playSoftTone(baseFreq * 1.5, 1.8, 0.06);
+            if (isPlayingMusic && !hasCustomMp3) playSoftTone(baseFreq * 1.5, 1.8, 0.08);
           }, 350);
         }
         noteIndex++;
@@ -136,23 +179,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function toggleMusic(e) {
     if (e) {
       e.stopPropagation();
-      e.preventDefault();
     }
     initAudio();
-    isPlayingMusic = !isPlayingMusic;
     if (isPlayingMusic) {
-      musicToggle.classList.add('playing');
-      startRomanticMelody();
-      // Play instant confirmation bell so user hears it right away
-      playSoftTone(659.25, 1.5, 0.15);
+      pauseMusicTrack();
     } else {
-      musicToggle.classList.remove('playing');
-      if (melodyInterval) clearInterval(melodyInterval);
+      playMusicTrack();
+      playSoftTone(659.25, 1.5, 0.18);
     }
   }
 
   musicToggle.addEventListener('click', toggleMusic);
-  musicToggle.addEventListener('touchend', toggleMusic);
+  musicToggle.addEventListener('touchstart', toggleMusic, { passive: true });
 
   /* ===================================================
      2. MAGNIFICENT MULTI-CANOPY LOVE TREE ENGINE
@@ -677,12 +715,10 @@ document.addEventListener('DOMContentLoaded', () => {
     envelopeOpened = true;
     if (e && e.cancelable) e.preventDefault();
 
-    // Ensure audio context is active
+    // Ensure audio playback starts
     initAudio();
     if (!isPlayingMusic) {
-      isPlayingMusic = true;
-      musicToggle.classList.add('playing');
-      startRomanticMelody();
+      playMusicTrack();
     }
 
     // Play sparkling chime chord
@@ -784,6 +820,17 @@ document.addEventListener('DOMContentLoaded', () => {
           delay = Math.random() * 20 + 55; // ~55-75ms per character
         }
 
+        // Auto scroll smoothly to keep cursor in view while typing
+        if (cursor) {
+          const rect = cursor.getBoundingClientRect();
+          if (rect.bottom > window.innerHeight - 100) {
+            window.scrollBy({
+              top: rect.bottom - (window.innerHeight - 120),
+              behavior: 'smooth'
+            });
+          }
+        }
+
         setTimeout(typeNextChar, delay);
       } else {
         cursor.style.display = 'none';
@@ -793,6 +840,8 @@ document.addEventListener('DOMContentLoaded', () => {
           if (letterSignatureBox) {
             letterSignatureBox.classList.remove('hidden');
             letterSignatureBox.classList.add('show');
+            // Ensure signature is visible
+            letterSignatureBox.scrollIntoView({ behavior: 'smooth', block: 'end' });
           }
           launchGrandConfetti();
         }, 800);

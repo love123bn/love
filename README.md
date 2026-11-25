@@ -36,12 +36,13 @@ Trang web tỏ tình được thiết kế với giao diện hiện đại, lãn
 ### 3. Tùy chỉnh các lời hứa:
 - Mở file `index.html`, tìm thẻ `<div class="promises-grid">` và chỉnh sửa các lời hứa theo ý muốn của bạn.
 
-### 4. Dùng bài hát MP3 riêng của bạn (tùy chọn):
-Nếu bạn muốn dùng một bài hát MP3 có lời (ví dụ như bài *Ánh Nắng Của Anh*, *Until I Found You*,...):
-1. Copy file bài hát vào cùng thư mục này và đổi tên thành `audio.mp3`.
-2. Mở file `index.html`, thêm thẻ sau vào bên trong thẻ `<body>`:
-   ```html
-   <audio id="bgMusic" src="audio.mp3" loop preload="auto"></audio>
-   ```
-3. Mở `script.js`, tìm hàm `toggleMusic` để gọi `document.getElementById('bgMusic').play()`.
-*(Hiện tại trang web đã có sẵn bộ sinh giai điệu piano ngọt ngào tự động chạy cực kỳ êm ái mà không sợ lỗi link mạng).*
+## 🎵 Cách thêm file nhạc MP3 của bạn:
+1. Bạn chỉ cần lấy file bài hát yêu thích (ví dụ: *Until I Found You*, *Ánh Nắng Của Anh*, *Ánh Sao Và Bầu Trời*,...).
+2. Đổi tên file đó thành **`audio.mp3`** và dán thẳng vào cùng thư mục với file `index.html` (thư mục `LOVE`).
+3. Khi bạn hoặc Hương mở web (trên máy tính hay điện thoại), web sẽ **tự động phát bài hát `audio.mp3`** đó.
+*(Nếu không có file `audio.mp3`, web vẫn có sẵn bộ phát giai điệu piano du dương tự động dự phòng, không bao giờ lo bị im lặng!)*.
+
+---
+
+## 📜 Cơ chế tự động cuộn trang (Auto-scroll):
+- Khi chữ trong thư được gõ ra đến đâu, màn hình sẽ **tự động cuộn theo con trỏ đến đó** một cách êm ái, giúp người đọc trên điện thoại không cần phải lấy tay vuốt màn hình liên tục.
