@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Gửi Hương - Người Anh Yêu ❤️</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Montserrat:wght@300;400;500;600&family=Quicksand:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- Background Canvas for Stars & Hearts & Tree -->
+  <canvas id="treeCanvas"></canvas>
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Sound Toggle Button -->
+  <button id="musicToggle" class="music-btn" title="Bật/Tắt nhạc">
+    <span class="music-icon">🎵</span>
+    <span class="music-text">Giai điệu tình yêu</span>
+  </button>
+
+  <!-- SCREEN 1: ENVELOPE OPENING -->
+  <div id="envelopeSection" class="envelope-section">
+    <div class="intro-greeting">
+      <p class="greeting-subtitle">Anh có một điều đặc biệt dành riêng cho Hương...</p>
+      <h1 class="greeting-title">Chạm vào phong thư để mở nhé! ✨</h1>
+    </div>
+
+    <div class="envelope-wrapper" id="envelopeWrapper">
+      <div class="envelope" id="envelope">
+        <div class="envelope-back"></div>
+        <div class="envelope-letter-peek">
+          <div class="peek-line"></div>
+          <div class="peek-line short"></div>
+          <div class="peek-heart">❤️</div>
+        </div>
+        <div class="envelope-pocket"></div>
+        <div class="envelope-flap" id="envelopeFlap"></div>
+        <div class="wax-seal" id="waxSeal">
+          <span class="seal-heart">💌</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="instruction-hint">Chạm vào lá thư để xem điều kỳ diệu 💖</p>
+  </div>
+
+  <!-- SCREEN 2: MAIN ROMANTIC INTERFACE (Tree + Letter + Promises) -->
+  <main id="mainContent" class="main-content hidden">
+    <!-- Top status bar -->
+    <div class="love-badge">
+      <span class="badge-icon">💖</span>
+      <span id="loveTimerText">Từng giây từng phút bên em đều là điều tuyệt vời nhất</span>
+    </div>
+
+    <div class="content-container">
+      <!-- Left Column: Tree area & Header -->
+      <div class="tree-column">
+        <div class="tree-display-hint" id="treeHint">
+          <span class="sparkle">✨</span> Cây tình yêu nở hoa từ ngàn trái tim <span class="sparkle">✨</span>
+        </div>
+        <!-- Spacer gives room for the interactive tree on canvas -->
+        <div class="tree-spacer"></div>
+      </div>
+
+      <!-- Right Column: Romantic Letter Card with Glassmorphism -->
+      <div class="letter-card" id="letterCard">
+        <div class="letter-header">
+          <div class="stamp-box">
+            <span class="heart-stamp">FOREVER</span>
+          </div>
+          <h2 class="letter-recipient">Gửi Hương - Cả Thế Giới Của Anh! 🌸</h2>
+          <div class="letter-date" id="letterDate"></div>
+        </div>
+
+        <!-- Complete Romantic Letter -->
+        <div class="letter-body">
+          <p id="typewriterText" class="letter-text"></p>
+          <span class="cursor" id="cursor">|</span>
+        </div>
+
+        <!-- Signature section (appears after letter completes) -->
+        <div class="letter-signature-box hidden" id="letterSignatureBox">
+          <div class="signature">
+            <span>Yêu và muốn che chở cho em suốt đời,</span>
+            <strong>Người muốn cùng em chung một mái ấm ❤️</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
